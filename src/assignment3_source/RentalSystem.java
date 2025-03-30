@@ -7,6 +7,20 @@ public class RentalSystem {
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
 
+    
+    private static RentalSystem instance;
+
+   
+    private RentalSystem() {
+    }
+
+    public static RentalSystem getInstance() {
+        if (instance == null) {
+            instance = new RentalSystem();
+        }
+        return instance;
+    }
+
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
     }
@@ -20,8 +34,7 @@ public class RentalSystem {
             vehicle.setStatus(Vehicle.VehicleStatus.RENTED);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
             System.out.println("Vehicle rented to " + customer.getCustomerName());
-        }
-        else {
+        } else {
             System.out.println("Vehicle is not available for renting.");
         }
     }
@@ -31,36 +44,37 @@ public class RentalSystem {
             vehicle.setStatus(Vehicle.VehicleStatus.AVAILABLE);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, extraFees, "RETURN"));
             System.out.println("Vehicle returned by " + customer.getCustomerName());
-        }
-        else {
+        } else {
             System.out.println("Vehicle is not rented.");
         }
-    }    
+    }
 
     public void displayVehicles(boolean onlyAvailable) {
-    	System.out.println("|     Type         |\tPlate\t|\tMake\t|\tModel\t|\tYear\t|");
-    	System.out.println("---------------------------------------------------------------------------------");
-    	 
+        System.out.println("|     Type         |\tPlate\t|\tMake\t|\tModel\t|\tYear\t|");
+        System.out.println("---------------------------------------------------------------------------------");
+
         for (Vehicle v : vehicles) {
             if (!onlyAvailable || v.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
-                System.out.println("|     " + (v instanceof Car ? "Car          " : "Motorcycle   ") + "|\t" + v.getLicensePlate() + "\t|\t" + v.getMake() + "\t|\t" + v.getModel() + "\t|\t" + v.getYear() + "\t|\t");
+                System.out.println("|     " + (v instanceof Car ? "Car          " : "Motorcycle   ") + "|\t" +
+                        v.getLicensePlate() + "\t|\t" + v.getMake() + "\t|\t" +
+                        v.getModel() + "\t|\t" + v.getYear() + "\t|\t");
             }
         }
         System.out.println();
     }
-    
+
     public void displayAllCustomers() {
         for (Customer c : customers) {
             System.out.println("  " + c.toString());
         }
     }
-    
+
     public void displayRentalHistory() {
         for (RentalRecord record : rentalHistory.getRentalHistory()) {
             System.out.println(record.toString());
         }
     }
-    
+
     public Vehicle findVehicleByPlate(String plate) {
         for (Vehicle v : vehicles) {
             if (v.getLicensePlate().equalsIgnoreCase(plate)) {
@@ -69,7 +83,7 @@ public class RentalSystem {
         }
         return null;
     }
-    
+
     public Customer findCustomerById(String id) {
         for (Customer c : customers)
             if (c.getCustomerId() == Integer.parseInt(id))
