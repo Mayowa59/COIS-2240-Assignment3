@@ -1,8 +1,10 @@
+package assignment3_source;
+
 public class Truck extends Vehicle implements Rentable {
     private double cargoCapacity;
 
-    public Truck(String make, String model, int year, double cargoCapacity) {
-        super(make, model, year);
+    public Truck(String licensePlate, String make, String model, int year, double cargoCapacity) {
+        super(make, model, year, licensePlate);
         if (cargoCapacity <= 0) throw new IllegalArgumentException("Cargo capacity must be > 0");
         this.cargoCapacity = cargoCapacity;
     }

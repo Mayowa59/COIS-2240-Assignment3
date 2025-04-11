@@ -1,3 +1,5 @@
+package assignment3_source;
+
 public class Customer {
     private int customerId;
     private String name;
@@ -8,11 +10,11 @@ public class Customer {
     }
 
     public int getCustomerId() {
-    	return customerId;
+        return customerId;
     }
 
     public String getCustomerName() {
-    	return name;
+        return name;
     }
 
     @Override
@@ -20,3 +22,4 @@ public class Customer {
         return "Customer ID: " + customerId + " | Name: " + name;
     }
 }
+
