@@ -1,32 +1,12 @@
 package assignment3_source;
 
-public class Truck extends Vehicle implements Rentable {
-    private double cargoCapacity;
-
-    public Truck(String licensePlate, String make, String model, int year, double cargoCapacity) {
-        super(make, model, year, licensePlate);
-        if (cargoCapacity <= 0) throw new IllegalArgumentException("Cargo capacity must be > 0");
-        this.cargoCapacity = cargoCapacity;
-    }
-
-    public double getCargoCapacity() {
-        return cargoCapacity;
+public class Truck extends Vehicle {
+    public Truck(String licensePlate, String make, String model, int year) {
+        super(licensePlate, make, model, year);
     }
 
     @Override
-    public String getInfo() {
-        return super.getInfo() + " | Cargo Capacity: " + cargoCapacity;
-    }
-
-    @Override
-    public void rentVehicle() {
-        setStatus(VehicleStatus.RENTED);
-        System.out.println("Truck " + getLicensePlate() + " has been rented.");
-    }
-
-    @Override
-    public void returnVehicle() {
-        setStatus(VehicleStatus.AVAILABLE);
-        System.out.println("Truck " + getLicensePlate() + " has been returned.");
+    public String getType() {
+        return "Truck";
     }
 }

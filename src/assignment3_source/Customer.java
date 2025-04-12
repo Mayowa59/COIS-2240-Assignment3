@@ -1,25 +1,19 @@
 package assignment3_source;
 
 public class Customer {
-    private int customerId;
+    private String id;
     private String name;
 
-    public Customer(int customerId, String name) {
-        this.customerId = customerId;
+    public Customer(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public String getId() {
+        return id;
     }
 
-    public String getCustomerName() {
+    public String getName() {
         return name;
     }
-
-    @Override
-    public String toString() {
-        return "Customer ID: " + customerId + " | Name: " + name;
-    }
 }
-

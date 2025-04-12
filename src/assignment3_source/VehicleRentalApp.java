@@ -1,119 +1,147 @@
 package assignment3_source;
-import java.util.Scanner;
-import java.time.LocalDate;
+
+import java.util.*;
 
 public class VehicleRentalApp {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        RentalSystem rentalSystem = RentalSystem.getInstance();
+        RentalSystem system = RentalSystem.getInstance();
+        Scanner sc = new Scanner(System.in);
 
+        // Main menu for interaction
         while (true) {
-            System.out.println("\n1: Add Vehicle\n2: Add Customer\n3: Rent Vehicle\n4: Return Vehicle\n5: Display Available Vehicles\n6: Show Rental History\n7: Exit");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            System.out.println("\nVehicle Rental System Menu:");
+            System.out.println("1. Rent Vehicle");
+            System.out.println("2. Return Vehicle");
+            System.out.println("3. View All Available Vehicles");
+            System.out.println("4. View Rental History");
+            System.out.println("5. Add Customer");
+            System.out.println("6. Add Vehicle");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+            String choice = sc.nextLine();
 
             switch (choice) {
-                case 1:
-                    System.out.println("  1: Car\n  2: Motorcycle\n  3: Truck");
-                    int vehicleChoice = scanner.nextInt();
-                    scanner.nextLine();
-                    Vehicle vehicle = null;
-                    switch (vehicleChoice) {
-                        case 1:
-                            System.out.print("Enter License Plate: ");
-                            String plate = scanner.nextLine();
-                            System.out.print("Enter Make: ");
-                            String make = scanner.nextLine();
-                            System.out.print("Enter Model: ");
-                            String model = scanner.nextLine();
-                            System.out.print("Enter Year: ");
-                            int year = scanner.nextInt();
-                            System.out.print("Enter Number of Seats: ");
-                            int seats = scanner.nextInt();
-                            scanner.nextLine();
-                            vehicle = new Car(plate, make, model, year, seats);
-                            break;
-                        case 2:
-                            System.out.print("Enter License Plate: ");
-                            plate = scanner.nextLine();
-                            System.out.print("Enter Make: ");
-                            make = scanner.nextLine();
-                            System.out.print("Enter Model: ");
-                            model = scanner.nextLine();
-                            System.out.print("Enter Year: ");
-                            year = scanner.nextInt();
-                            System.out.print("Does it have a sidecar? (true/false): ");
-                            boolean hasSidecar = scanner.nextBoolean();
-                            vehicle = new Motorcycle(make, model, plate, year, hasSidecar);
-                            break;
-                        // Other vehicle types can be added here
-                    }
-                    if (vehicle != null) {
-                        rentalSystem.addVehicle(vehicle);
-                    }
-                    break;
-                case 2:
-                    System.out.print("Enter Customer ID: ");
-                    int customerId = scanner.nextInt();
-                    scanner.nextLine();
-                    System.out.print("Enter Customer Name: ");
-                    String customerName = scanner.nextLine();
-                    Customer customer = new Customer(customerId, customerName);
-                    rentalSystem.addCustomer(customer);
-                    break;
-                case 3:
+                case "1":
+                    // Rent vehicle
                     System.out.print("Enter customer ID: ");
-                    int cidRent = scanner.nextInt();
-                    scanner.nextLine();
-                    Customer customerToRent = rentalSystem.findCustomerById(cidRent);
-                    if (customerToRent == null) {
+                    String rentCustomerId = sc.nextLine();
+                    Customer rentCustomer = system.findCustomerById(rentCustomerId);
+                    if (rentCustomer == null) {
                         System.out.println("Customer not found.");
                         break;
                     }
-                    System.out.print("Enter Vehicle License Plate: ");
-                    String plateRent = scanner.nextLine();
-                    Vehicle vehicleToRent = rentalSystem.findVehicleByPlate(plateRent);
-                    if (vehicleToRent == null) {
+
+                    System.out.print("Enter license plate of vehicle to rent: ");
+                    String rentPlate = sc.nextLine();
+                    Vehicle rentVehicle = system.findVehicleByPlate(rentPlate);
+                    if (rentVehicle == null) {
                         System.out.println("Vehicle not found.");
                         break;
                     }
-                    System.out.print("Enter rental amount: ");
-                    double rentalAmount = scanner.nextDouble();
-                    LocalDate rentDate = LocalDate.now();
-                    rentalSystem.rentVehicle(vehicleToRent, customerToRent, rentDate, rentalAmount);
+
+                    if (rentVehicle.isRented()) {
+                        System.out.println("Vehicle is currently not available for rent.");
+                        break;
+                    }
+
+                    System.out.print("Enter rent year: ");
+                    String rentYear = sc.nextLine();
+                    system.rentVehicle(rentCustomer, rentVehicle, rentYear);
+                    System.out.println("Vehicle rented successfully.");
                     break;
-                case 4:
+
+                case "2":
+                    // Return vehicle
                     System.out.print("Enter customer ID: ");
-                    cidRent = scanner.nextInt();
-                    scanner.nextLine();
-                    customerToRent = rentalSystem.findCustomerById(cidRent);
-                    if (customerToRent == null) {
+                    String returnCustomerId = sc.nextLine();
+                    Customer returnCustomer = system.findCustomerById(returnCustomerId);
+                    if (returnCustomer == null) {
                         System.out.println("Customer not found.");
                         break;
                     }
-                    System.out.print("Enter Vehicle License Plate: ");
-                    plateRent = scanner.nextLine();
-                    vehicleToRent = rentalSystem.findVehicleByPlate(plateRent);
-                    if (vehicleToRent == null) {
+
+                    System.out.print("Enter license plate of vehicle to return: ");
+                    String returnPlate = sc.nextLine();
+                    Vehicle returnVehicle = system.findVehicleByPlate(returnPlate);
+                    if (returnVehicle == null) {
                         System.out.println("Vehicle not found.");
                         break;
                     }
-                    System.out.print("Enter extra fees: ");
-                    double extraFees = scanner.nextDouble();
-                    LocalDate returnDate = LocalDate.now();
-                    rentalSystem.returnVehicle(vehicleToRent, customerToRent, returnDate, extraFees);
+
+                    System.out.print("Enter return year: ");
+                    String returnYear = sc.nextLine();
+                    system.returnVehicle(returnCustomer, returnVehicle, returnYear);
+                    System.out.println("Vehicle returned successfully.");
                     break;
-                case 5:
-                    // Show available vehicles code here
+
+                case "3":
+                    // View available vehicles
+                    System.out.println("Available Vehicles:");
+                    for (Vehicle v : system.getAvailableVehicles()) {
+                        System.out.println(v.toDataString());
+                    }
                     break;
-                case 6:
-                    // Display rental history code here
+
+                case "4":
+                    // View rental history
+                    System.out.println("Rental History:");
+                    for (RentalRecord record : system.getRentalHistory()) {
+                        System.out.println(record);
+                    }
                     break;
-                case 7:
-                    System.exit(0);
+
+                case "5":
+                    // Add new customer
+                    System.out.print("Enter customer ID: ");
+                    String newCustomerId = sc.nextLine();
+                    System.out.print("Enter customer name: ");
+                    String newCustomerName = sc.nextLine();
+                    if (system.addCustomer(new Customer(newCustomerId, newCustomerName))) {
+                        System.out.println("Customer added successfully.");
+                    } else {
+                        System.out.println("Customer ID already exists.");
+                    }
                     break;
+
+                case "6":
+                    // Add new vehicle
+                    System.out.println("Choose vehicle type: 1. Car  2. SuperCar  3. Motorcycle  4. Truck");
+                    String typeChoice = sc.nextLine();
+                    System.out.print("Enter vehicle license plate: ");
+                    String newPlate = sc.nextLine();
+                    System.out.print("Enter vehicle make: ");
+                    String newMake = sc.nextLine();
+                    System.out.print("Enter vehicle model: ");
+                    String newModel = sc.nextLine();
+                    System.out.print("Enter vehicle year: ");
+                    int newYear = Integer.parseInt(sc.nextLine());
+
+                    Vehicle newVehicle = switch (typeChoice) {
+                        case "1" -> new Car(newPlate, newMake, newModel, newYear);
+                        case "2" -> new SuperCar(newPlate, newMake, newModel, newYear);
+                        case "3" -> new Motorcycle(newPlate, newMake, newModel, newYear);
+                        case "4" -> new Truck(newPlate, newMake, newModel, newYear);
+                        default -> null;
+                    };
+
+                    if (newVehicle == null) {
+                        System.out.println("Invalid vehicle type selected.");
+                    } else if (system.addVehicle(newVehicle)) {
+                        System.out.println("Vehicle added successfully.");
+                    } else {
+                        System.out.println("Vehicle with this license plate already exists.");
+                    }
+                    break;
+
+                case "7":
+                    // Exit
+                    System.out.println("Exiting application. Goodbye!");
+                    sc.close();
+                    return;
+
                 default:
-                    System.out.println("Invalid choice, try again.");
+                    System.out.println("Invalid option.");
+                    break;
             }
         }
     }

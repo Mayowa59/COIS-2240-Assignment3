@@ -1,35 +1,31 @@
-	package assignment3_source;
-	
-	import java.time.LocalDate;
-	
-	public class RentalRecord {
-	    private Vehicle vehicle;
-	    private Customer customer;
-	    private LocalDate recordDate;
-	    private double totalAmount;
-	    private String recordType; // "RENT" or "RETURN"
-	
-	    public RentalRecord(Vehicle vehicle, Customer customer, LocalDate recordDate, double totalAmount, String recordType) {
-	        this.vehicle = vehicle;
-	        this.customer = customer;
-	        this.recordDate = recordDate;
-	        this.totalAmount = totalAmount;
-	        this.recordType = recordType;
-	    }
-	
-	    public Customer getCustomer(){
-	        return customer;
-	    }
-	    
-	    public Vehicle getVehicle(){
-	        return vehicle;
-	    }
-	
-	    @Override
-	    public String toString() {
-	        return recordType + " | Plate: " + vehicle.getLicensePlate() + 
-	               " | Customer: " + customer.getCustomerName() + 
-	               " | Date: " + recordDate + 
-	               " | Amount: $" + totalAmount;
-	    }
-	}
+package assignment3_source;
+public class RentalRecord {
+    private Customer customer;
+    private Vehicle vehicle;
+    private String rentYear;
+    private String returnYear;
+
+    public RentalRecord(Customer customer, Vehicle vehicle, String rentYear) {
+        this.customer = customer;
+        this.vehicle = vehicle;
+        this.rentYear = rentYear;
+        this.returnYear = null;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public boolean isReturned() {
+        return returnYear != null;
+    }
+
+    public void setReturnYear(String returnYear) {
+        this.returnYear = returnYear;
+    }
+
+    public String toString() {
+        return customer.getName() + " rented " + vehicle.getLicensePlate() +
+               " in " + rentYear + (returnYear != null ? ", returned in " + returnYear : " (Not returned)");
+    }
+}

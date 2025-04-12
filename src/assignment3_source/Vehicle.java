@@ -1,38 +1,36 @@
 package assignment3_source;
+public abstract class Vehicle implements Rentable {
+    protected String licensePlate;
+    protected String make;
+    protected String model;
+    protected int year;
+    protected boolean isRented;
 
-public class Vehicle {
-    private String make;
-    private String model;
-    private int year;
-    private String licensePlate;
-    private VehicleStatus status;
-
-    public enum VehicleStatus {
-        AVAILABLE,
-        RENTED
-    }
-
-    public Vehicle(String make, String model, int year, String licensePlate) {
+    public Vehicle(String licensePlate, String make, String model, int year) {
+        this.licensePlate = licensePlate;
         this.make = make;
         this.model = model;
         this.year = year;
-        this.licensePlate = licensePlate;
-        this.status = VehicleStatus.AVAILABLE;
+        this.isRented = false;
     }
 
     public String getLicensePlate() {
         return licensePlate;
     }
 
-    public VehicleStatus getStatus() {
-        return status;
+    public boolean isRented() {
+        return isRented;
     }
 
-    public void setStatus(VehicleStatus status) {
-        this.status = status;
+    public void setRented(boolean rented) {
+        this.isRented = rented;
     }
 
-    public String getInfo() {
-        return "Make: " + make + " | Model: " + model + " | Year: " + year;
+    public String toDataString() {
+        return getType() + "," + licensePlate + "," + make + "," + model + "," + year;
+    }
+
+    public String toString() {
+        return make + " " + model + " (" + year + ") - " + licensePlate + " [" + (isRented ? "RENTED" : "AVAILABLE") + "]";
     }
 }
