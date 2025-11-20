@@ -1,53 +1,52 @@
- //Mayowa Adeyeri
-package assignment2;
+public abstract class Vehicle {
+    private String licensePlate;
+    private String make;
+    private String model;
+    private int year;
+    private VehicleStatus status;
 
-public abstract class Vehicle implements Rentable {
-    public enum Status { AVAILABLE, RENTED }
-
-    protected String make;
-    protected String model;
-    protected int year;
-    protected String licensePlate;
-    protected Status status;
-
-    private static int plateCounter = 1000;
+    public enum VehicleStatus { Available, Held, Rented, UnderMaintenance, OutOfService }
 
     public Vehicle(String make, String model, int year) {
-        this.make = make;
-        this.model = model;
+    	if (make == null || make.isEmpty())
+    		this.make = null;
+    	else
+    		this.make = make.substring(0, 1).toUpperCase() + make.substring(1).toLowerCase();
+    	
+    	if (model == null || model.isEmpty())
+    		this.model = null;
+    	else
+    		this.model = model.substring(0, 1).toUpperCase() + model.substring(1).toLowerCase();
+    	
         this.year = year;
-        this.status = Status.AVAILABLE;
-        this.licensePlate = "PLT" + (plateCounter++);
+        this.status = VehicleStatus.Available;
+        this.licensePlate = null;
     }
 
-    public Status getStatus() { return status; }
+    public Vehicle() {
+        this(null, null, 0);
+    }
 
-    public void setStatus(Status s) { this.status = s; }
+    public void setLicensePlate(String plate) {
+        this.licensePlate = plate == null ? null : plate.toUpperCase();
+    }
+
+    public void setStatus(VehicleStatus status) {
+    	this.status = status;
+    }
 
     public String getLicensePlate() { return licensePlate; }
 
-    public abstract String getInfo();
+    public String getMake() { return make; }
 
-    public void rent() {
-        if (status == Status.AVAILABLE) {
-            status = Status.RENTED;
-            System.out.println(getInfo() + " is now rented.");
-        } else {
-            System.out.println(getInfo() + " is already rented.");
-        }
+    public String getModel() { return model;}
+
+    public int getYear() { return year; }
+
+    public VehicleStatus getStatus() { return status; }
+
+    public String getInfo() {
+        return "| " + licensePlate + " | " + make + " | " + model + " | " + year + " | " + status + " |";
     }
 
-    public void returnVehicle() {
-        if (status == Status.RENTED) {
-            status = Status.AVAILABLE;
-            System.out.println(getInfo() + " has been returned.");
-        } else {
-            System.out.println(getInfo() + " was not rented.");
-        }
-    }
-
-    public boolean isAvailable() {
-        return status == Status.AVAILABLE;
-    }
 }
-//Mayowa Adeyeri

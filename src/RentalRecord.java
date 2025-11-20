@@ -1,27 +1,45 @@
- //Mayowa Adeyeri
-package assignment2;
-
 import java.time.LocalDate;
 
 public class RentalRecord {
     private Vehicle vehicle;
     private Customer customer;
-    private LocalDate date;
-    private double cost;
-    private String type; // RENT or RETURN
+    private LocalDate recordDate;
+    private double totalAmount;
+    private String recordType; // "RENT" or "RETURN"
 
-    public RentalRecord(Vehicle vehicle, Customer customer, LocalDate date, double cost, String type) {
+    public RentalRecord(Vehicle vehicle, Customer customer, LocalDate recordDate, double totalAmount, String recordType) {
         this.vehicle = vehicle;
         this.customer = customer;
-        this.date = date;
-        this.cost = cost;
-        this.type = type;
+        this.recordDate = recordDate;
+        this.totalAmount = totalAmount;
+        this.recordType = recordType;
     }
 
+    public Customer getCustomer(){
+    	return customer;
+    }
+    
+    public Vehicle getVehicle(){
+    	return vehicle;
+    }
+    
+    public LocalDate getRecordDate() {
+        return recordDate;
+    }
+    
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+    
+    public String getRecordType() {
+        return recordType;
+    }
+    
     @Override
     public String toString() {
-        String customerName = (customer != null) ? customer.getName() : "N/A";
-        return "[" + type + "] " + date + " - " + vehicle.getLicensePlate() + " (" + vehicle.getClass().getSimpleName() + ") - Customer: " + customerName + " - Cost: $" + cost;
+        return recordType + " | Plate: " + vehicle.getLicensePlate() + 
+               " | Customer: " + customer.getCustomerName() + 
+               " | Date: " + recordDate + 
+               " | Amount: $" + totalAmount;
     }
 }
-//Mayowa Adeyeri

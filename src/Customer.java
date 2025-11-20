@@ -1,24 +1,22 @@
- //Mayowa Adeyeri
-package assignment2;
-
 public class Customer {
-    private String customerId;
+    private int customerId;
     private String name;
-    private String phoneNumber;
 
-    public Customer(String customerId, String name, String phoneNumber) {
+    public Customer(int customerId, String name) {
         this.customerId = customerId;
         this.name = name;
-        this.phoneNumber = phoneNumber;
     }
 
-    public String getCustomerId() { return customerId; }
+    public int getCustomerId() {
+    	return customerId;
+    }
 
-    public String getName() { return name; }
+    public String getCustomerName() {
+    	return name;
+    }
 
     @Override
     public String toString() {
-        return "Customer ID: " + customerId + ", Name: " + name + ", Phone: " + phoneNumber;
+        return "Customer ID: " + customerId + " | Name: " + name;
     }
 }
-//Mayowa Adeyeri

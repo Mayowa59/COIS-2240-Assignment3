@@ -1,9 +1,4 @@
- //Mayowa Adeyeri
-package assignment2;
-
 public interface Rentable {
-    void rent();
+    void rentVehicle();
     void returnVehicle();
-    boolean isAvailable();
 }
-//Mayowa Adeyeri

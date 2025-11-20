@@ -1,7 +1,4 @@
- //Mayowa Adeyeri
-package assignment2;
-
-public class Car extends Vehicle {
+public class Car extends Vehicle implements Rentable {
     private int numSeats;
 
     public Car(String make, String model, int year, int numSeats) {
@@ -9,9 +6,24 @@ public class Car extends Vehicle {
         this.numSeats = numSeats;
     }
 
+    public int getNumSeats() {
+        return numSeats;
+    }
+
     @Override
     public String getInfo() {
-        return "Car [" + licensePlate + "] " + make + " " + model + " (" + year + "), Seats: " + numSeats + ", Status: " + status;
+        return super.getInfo() + " | Seats: " + numSeats;
+    }
+
+    @Override
+    public void rentVehicle() {
+        setStatus(VehicleStatus.Rented);
+        System.out.println("Car " + getLicensePlate() + " has been rented.");
+    }
+
+    @Override
+    public void returnVehicle() {
+        setStatus(VehicleStatus.Available);
+        System.out.println("Car " + getLicensePlate() + " has been returned.");
     }
 }
-//Mayowa Adeyeri

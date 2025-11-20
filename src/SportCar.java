@@ -1,19 +1,15 @@
- //Mayowa Adeyeri
-package assignment2;
-
-public class SportCar extends Car {
+public final class SportCar extends Car {
     private int horsepower;
-    private boolean turbo;
+    private boolean hasTurbo;
 
-    public SportCar(String make, String model, int year, int numSeats, int horsepower, boolean turbo) {
+    public SportCar(String make, String model, int year, int numSeats, int horsepower, boolean hasTurbo) {
         super(make, model, year, numSeats);
         this.horsepower = horsepower;
-        this.turbo = turbo;
+        this.hasTurbo = hasTurbo;
     }
 
     @Override
     public String getInfo() {
-        return "SportCar [" + licensePlate + "] " + make + " " + model + " (" + year + "), HP: " + horsepower + ", Turbo: " + turbo + ", Status: " + status;
+        return super.getInfo() + " | Horsepower: " + horsepower + " | Turbo: " + (hasTurbo ? "Yes" : "No");
     }
 }
-//Mayowa Adeyeri
