@@ -1,3 +1,5 @@
+package assignment2;
+
 public abstract class Vehicle {
     private String licensePlate;
     private String make;
@@ -7,7 +9,7 @@ public abstract class Vehicle {
 
     public enum VehicleStatus { Available, Held, Rented, UnderMaintenance, OutOfService }
 
-   
+    
     public Vehicle(String make, String model, int year) {
 
         this.make  = capitalize(make);

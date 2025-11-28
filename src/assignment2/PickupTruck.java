@@ -1,3 +1,5 @@
+package assignment2;
+
 public class PickupTruck extends Vehicle implements Rentable {
     private double cargoSize;
     private boolean hasTrailer;

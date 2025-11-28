@@ -1,3 +1,5 @@
+package assignment2;
+
 public class Minibus extends Vehicle implements Rentable {
     private boolean isAccessible;
 

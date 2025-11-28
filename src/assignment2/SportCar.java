@@ -1,3 +1,5 @@
+package assignment2;
+
 public final class SportCar extends Car {
     private int horsepower;
     private boolean hasTurbo;
