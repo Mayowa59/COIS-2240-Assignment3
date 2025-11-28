@@ -7,12 +7,15 @@ import java.io.*;
 
 public class RentalSystem {
 
+    // Singleton instance (only one RentalSystem allowed)
     private static RentalSystem instance;
 
+    // Private constructor so no one else can create an object
     private RentalSystem() {
-        loadData();
+        loadData(); // load saved data from text files
     }
 
+    // Returns the one and only RentalSystem object
     public static RentalSystem getInstance() {
         if (instance == null) {
             instance = new RentalSystem();
@@ -20,11 +23,15 @@ public class RentalSystem {
         return instance;
     }
 
+    // Lists storing all vehicles, customers, and history
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
 
 
+    
+    // Save a vehicle to vehicles.txt (append mode)
+    
     private void saveVehicle(Vehicle vehicle) {
         try (FileWriter fw = new FileWriter("vehicles.txt", true)) {
             fw.write(
@@ -39,6 +46,7 @@ public class RentalSystem {
         }
     }
 
+    // Save a customer to customers.txt (append mode)
     private void saveCustomer(Customer customer) {
         try (FileWriter fw = new FileWriter("customers.txt", true)) {
             fw.write(
@@ -50,6 +58,7 @@ public class RentalSystem {
         }
     }
 
+    // Save a rental record to rental_records.txt (append mode)
     private void saveRecord(RentalRecord record) {
         try (FileWriter fw = new FileWriter("rental_records.txt", true)) {
             fw.write(
@@ -65,8 +74,12 @@ public class RentalSystem {
     }
 
 
+    
+    // Load saved data from text files when the program starts
+   
     private void loadData() {
 
+        // Load vehicles
         try (BufferedReader br = new BufferedReader(new FileReader("vehicles.txt"))) {
 
             String line;
@@ -81,9 +94,11 @@ public class RentalSystem {
                 int year = Integer.parseInt(arr[3]);
                 Vehicle.VehicleStatus status = Vehicle.VehicleStatus.valueOf(arr[4]);
 
+                // Default load as Car (assignment simplification)
                 Vehicle v = new Car(make, model, year, 4);
                 v.setLicensePlate(plate);
                 v.setStatus(status);
+
                 vehicles.add(v);
             }
 
@@ -92,6 +107,7 @@ public class RentalSystem {
         }
 
 
+        // Load customers
         try (BufferedReader br = new BufferedReader(new FileReader("customers.txt"))) {
 
             String line;
@@ -111,6 +127,7 @@ public class RentalSystem {
         }
 
 
+        // Load rental records
         try (BufferedReader br = new BufferedReader(new FileReader("rental_records.txt"))) {
 
             String line;
@@ -128,8 +145,9 @@ public class RentalSystem {
                 Vehicle v = findVehicleByPlate(plate);
                 Customer c = findCustomerByName(cname);
 
-                if (v != null && c != null)
+                if (v != null && c != null) {
                     rentalHistory.addRecord(new RentalRecord(v, c, date, amount, type));
+                }
             }
 
         } catch (Exception e) {
@@ -138,6 +156,7 @@ public class RentalSystem {
     }
 
 
+    // Find a customer by name (used when loading history)
     private Customer findCustomerByName(String name) {
         for (Customer c : customers)
             if (c.getCustomerName().equalsIgnoreCase(name))
@@ -146,6 +165,9 @@ public class RentalSystem {
     }
 
 
+   
+    // Add a vehicle (with duplicate plate check)
+    
     public boolean addVehicle(Vehicle vehicle) {
 
         if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
@@ -159,6 +181,7 @@ public class RentalSystem {
         return true;
     }
 
+    // Add a customer (with duplicate ID check)
     public boolean addCustomer(Customer customer) {
 
         if (findCustomerById(customer.getCustomerId()) != null) {
@@ -173,7 +196,11 @@ public class RentalSystem {
     }
 
 
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+    
+    // Rent a vehicle
+
+    public void rentVehicle(Vehicle vehicle, Customer customer,
+                            LocalDate date, double amount) {
 
         if (vehicle == null || customer == null) {
             System.out.println("Invalid vehicle or customer.");
@@ -181,7 +208,9 @@ public class RentalSystem {
         }
 
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Available) {
+
             vehicle.setStatus(Vehicle.VehicleStatus.Rented);
+
             RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
             rentalHistory.addRecord(record);
             saveRecord(record);
@@ -192,7 +221,12 @@ public class RentalSystem {
         }
     }
 
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+
+    
+    // Return a vehicle
+    
+    public void returnVehicle(Vehicle vehicle, Customer customer,
+                              LocalDate date, double extraFees) {
 
         if (vehicle == null || customer == null) {
             System.out.println("Invalid vehicle or customer.");
@@ -200,9 +234,11 @@ public class RentalSystem {
         }
 
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Rented) {
+
             vehicle.setStatus(Vehicle.VehicleStatus.Available);
 
-            RentalRecord record = new RentalRecord(vehicle, customer, date, extraFees, "RETURN");
+            RentalRecord record =
+                new RentalRecord(vehicle, customer, date, extraFees, "RETURN");
             rentalHistory.addRecord(record);
             saveRecord(record);
 
@@ -213,6 +249,7 @@ public class RentalSystem {
     }
 
 
+    // Lookup vehicle by plate
     public Vehicle findVehicleByPlate(String plate) {
         for (Vehicle v : vehicles)
             if (v.getLicensePlate().equalsIgnoreCase(plate))
@@ -220,6 +257,7 @@ public class RentalSystem {
         return null;
     }
 
+    // Lookup customer by ID
     public Customer findCustomerById(int id) {
         for (Customer c : customers)
             if (c.getCustomerId() == id)
@@ -227,6 +265,10 @@ public class RentalSystem {
         return null;
     }
 
+
+    
+    // Display methods for menu output
+  
     public void displayVehicles(Vehicle.VehicleStatus status) {
 
         if (status == null)
@@ -259,6 +301,7 @@ public class RentalSystem {
         System.out.println();
     }
 
+    // Display all customers
     public void displayAllCustomers() {
 
         System.out.println("\n=== Registered Customers ===");
@@ -276,6 +319,7 @@ public class RentalSystem {
         System.out.println();
     }
 
+    // Display rental history
     public void displayRentalHistory() {
 
         System.out.println("\n=== Rental History ===");
