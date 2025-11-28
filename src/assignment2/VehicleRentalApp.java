@@ -1,4 +1,5 @@
 package assignment2;
+
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -6,11 +7,16 @@ public class VehicleRentalApp {
 
     public static void main(String[] args) {
 
+        // Scanner for user input
         Scanner scanner = new Scanner(System.in);
+
+        // Get the single instance of the RentalSystem (Singleton)
         RentalSystem rentalSystem = RentalSystem.getInstance();
 
+        // Main program loop
         while (true) {
 
+            // Display menu options
             System.out.println("\n1: Add Vehicle\n" +
                                "2: Add Customer\n" +
                                "3: Rent Vehicle\n" +
@@ -20,10 +26,13 @@ public class VehicleRentalApp {
                                "0: Exit\n");
 
             int choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // clear newline
 
             switch (choice) {
 
+                
+                // CASE 1: Add a new vehicle
+               
                 case 1:
                     System.out.println("  1: Car\n" +
                                        "  2: Minibus\n" +
@@ -33,6 +42,7 @@ public class VehicleRentalApp {
                     int type = scanner.nextInt();
                     scanner.nextLine();
 
+                    // Collect vehicle details
                     System.out.print("Enter license plate: ");
                     String plate = scanner.nextLine().toUpperCase();
 
@@ -48,6 +58,7 @@ public class VehicleRentalApp {
 
                     Vehicle v = null;
 
+                    // Create correct vehicle type
                     if (type == 1) {
                         System.out.print("Seats: ");
                         int seats = scanner.nextInt();
@@ -75,18 +86,21 @@ public class VehicleRentalApp {
                         v = new SportCar(make, model, year, seats, hp, turbo);
                     }
 
+                    // Add vehicle to the system
                     if (v != null) {
                         v.setLicensePlate(plate);
                         rentalSystem.addVehicle(v);
                     }
-
                     break;
 
 
-                case 2:
+               
+                // CASE 2: Add customer
+                                case 2:
                     System.out.print("Enter customer ID: ");
                     int cid = scanner.nextInt();
                     scanner.nextLine();
+
                     System.out.print("Enter name: ");
                     String cname = scanner.nextLine();
 
@@ -94,6 +108,9 @@ public class VehicleRentalApp {
                     break;
 
 
+                
+                // CASE 3: Rent a vehicle
+               
                 case 3:
                     rentalSystem.displayVehicles(Vehicle.VehicleStatus.Available);
 
@@ -118,6 +135,9 @@ public class VehicleRentalApp {
                     break;
 
 
+               
+                // CASE 4: Return a vehicle
+                
                 case 4:
                     rentalSystem.displayVehicles(Vehicle.VehicleStatus.Rented);
 
@@ -142,16 +162,25 @@ public class VehicleRentalApp {
                     break;
 
 
+                
+                // CASE 5: Display available vehicles
+               
                 case 5:
                     rentalSystem.displayVehicles(Vehicle.VehicleStatus.Available);
                     break;
 
 
+               
+                // CASE 6: Display rental history
+                
                 case 6:
                     rentalSystem.displayRentalHistory();
                     break;
 
 
+               
+                // CASE 0: Exit program
+              
                 case 0:
                     System.out.println("Exiting...");
                     scanner.close();
