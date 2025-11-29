@@ -87,11 +87,13 @@ public class VehicleRentalApp {
                     }
 
                     // Add vehicle to the system
-                    if (v != null) {
+                    try {
                         v.setLicensePlate(plate);
-                        rentalSystem.addVehicle(v);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: " + e.getMessage());
+                        break; // stop adding vehicle
                     }
-                    break;
+
 
 
                
