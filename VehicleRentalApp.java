@@ -4,16 +4,18 @@ import java.time.LocalDate;
 public class VehicleRentalApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
+        // Uses the Singleton instance of RentalSystem instead of creating a new object
         RentalSystem rentalSystem = RentalSystem.getInstance();
 
         while (true) {
-        	System.out.println("\n1: Add Vehicle\n" + 
-                                  "2: Add Customer\n" + 
-                                  "3: Rent Vehicle\n" + 
-                                  "4: Return Vehicle\n" + 
-                                  "5: Display Available Vehicles\n" + 
-                                  "6: Show Rental History\n" + 
-                                  "0: Exit\n");
+            System.out.println("\n1: Add Vehicle\n" + 
+                               "2: Add Customer\n" + 
+                               "3: Rent Vehicle\n" + 
+                               "4: Return Vehicle\n" + 
+                               "5: Display Available Vehicles\n" + 
+                               "6: Show Rental History\n" + 
+                               "0: Exit\n");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -46,21 +48,22 @@ public class VehicleRentalApp {
                         boolean isAccessible = scanner.nextBoolean();
                         vehicle = new Minibus(make, model, year, isAccessible);
                         System.out.println("Minibus added successfully.");
-		            } else if (type == 3) {
-		                System.out.print("Enter the cargo size: ");
-		                double cargoSize = scanner.nextDouble();
-		                scanner.nextLine();
-		                System.out.print("Has trailer? (true/false): ");
-		                boolean hasTrailer = scanner.nextBoolean();
-		                vehicle = new PickupTruck(make, model, year, cargoSize, hasTrailer);
-		                System.out.println("Pickup Truck added successfully.");
-		            } else {
-		            	vehicle = null;
-		            }
-                    
+                    } else if (type == 3) {
+                        System.out.print("Enter the cargo size: ");
+                        double cargoSize = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.print("Has trailer? (true/false): ");
+                        boolean hasTrailer = scanner.nextBoolean();
+                        vehicle = new PickupTruck(make, model, year, cargoSize, hasTrailer);
+                        System.out.println("Pickup Truck added successfully.");
+                    } else {
+                        vehicle = null;
+                    }
+
                     if (vehicle != null) {
                         vehicle.setLicensePlate(plate);
 
+                        // Checks the boolean result so duplicate license plates are rejected
                         if (rentalSystem.addVehicle(vehicle)) {
                             System.out.println("Vehicle added successfully.");
                         } else {
@@ -74,25 +77,26 @@ public class VehicleRentalApp {
                 case 2:
                     System.out.print("Enter customer ID: ");
                     int cid = scanner.nextInt();
-                    scanner.nextLine(); // Consume the leftover newline
+                    scanner.nextLine();
                     System.out.print("Enter name: ");
                     String cname = scanner.nextLine();
 
+                    // Checks the boolean result so duplicate customer IDs are rejected
                     if (rentalSystem.addCustomer(new Customer(cid, cname))) {
                         System.out.println("Customer added successfully.");
                     } else {
                         System.out.println("Duplicate customer ID. Customer not added.");
                     }
                     break;
-                    
+
                 case 3:
-                	rentalSystem.displayVehicles(Vehicle.VehicleStatus.Available);
+                    rentalSystem.displayVehicles(Vehicle.VehicleStatus.Available);
 
                     System.out.print("Enter license plate: ");
                     String rentPlate = scanner.nextLine().toUpperCase();
 
-                	System.out.println("Registered Customers:");
-                	rentalSystem.displayAllCustomers();
+                    System.out.println("Registered Customers:");
+                    rentalSystem.displayAllCustomers();
 
                     System.out.print("Enter customer ID: ");
                     int cidRent = scanner.nextInt();
@@ -113,13 +117,13 @@ public class VehicleRentalApp {
                     break;
 
                 case 4:
-                	rentalSystem.displayVehicles(Vehicle.VehicleStatus.Rented);
+                    rentalSystem.displayVehicles(Vehicle.VehicleStatus.Rented);
 
-                	System.out.print("Enter license plate: ");
+                    System.out.print("Enter license plate: ");
                     String returnPlate = scanner.nextLine().toUpperCase();
-                    
-                	System.out.println("Registered Customers:");
-                	rentalSystem.displayAllCustomers();
+
+                    System.out.println("Registered Customers:");
+                    rentalSystem.displayAllCustomers();
 
                     System.out.print("Enter customer ID: ");
                     int cidReturn = scanner.nextInt();
@@ -138,17 +142,17 @@ public class VehicleRentalApp {
 
                     rentalSystem.returnVehicle(vehicleToReturn, customerToReturn, LocalDate.now(), returnFees);
                     break;
-                    
+
                 case 5:
                     rentalSystem.displayVehicles(Vehicle.VehicleStatus.Available);
                     break;
-                
+
                 case 6:
                     rentalSystem.displayRentalHistory();
                     break;
-                    
+
                 case 0:
-                	scanner.close();
+                    scanner.close();
                     System.exit(0);
             }
         }
