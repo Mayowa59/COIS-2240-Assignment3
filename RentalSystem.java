@@ -9,21 +9,25 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class RentalSystem {
+    // Stores the single instance of RentalSystem for the Singleton pattern
     private static RentalSystem instance;
 
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
 
+    // File names used to save and load program data
     private static final String VEHICLE_FILE = "vehicles.txt";
     private static final String CUSTOMER_FILE = "customers.txt";
     private static final String RECORD_FILE = "rental_records.txt";
 
-    // Singleton pattern: only one RentalSystem object can exist
+    // Private constructor prevents other classes from creating objects directly
+    // and loads previously saved data when the program starts
     private RentalSystem() {
         loadData();
     }
 
+    // Returns the one and only RentalSystem instance
     public static RentalSystem getInstance() {
         if (instance == null) {
             instance = new RentalSystem();
@@ -79,6 +83,7 @@ public class RentalSystem {
                     vehicle = new Minibus(make, model, year, accessible);
                 }
 
+                // Restores the loaded vehicle's license plate and status
                 if (vehicle != null) {
                     vehicle.setLicensePlate(plate);
                     vehicle.setStatus(status);
@@ -143,6 +148,7 @@ public class RentalSystem {
                 Vehicle vehicle = findVehicleByPlate(plate);
                 Customer customer = findCustomerById(customerId);
 
+                // Rebuilds the rental record only if the matching vehicle and customer exist
                 if (vehicle != null && customer != null) {
                     RentalRecord record = new RentalRecord(vehicle, customer, recordDate, amount, recordType);
                     rentalHistory.addRecord(record);
@@ -153,6 +159,7 @@ public class RentalSystem {
         }
     }
 
+    // Returns false if a vehicle with the same license plate already exists
     public boolean addVehicle(Vehicle vehicle) {
         if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
             System.out.println("Vehicle with license plate " + vehicle.getLicensePlate() + " already exists.");
@@ -164,6 +171,7 @@ public class RentalSystem {
         return true;
     }
 
+    // Returns false if a customer with the same ID already exists
     public boolean addCustomer(Customer customer) {
         if (findCustomerById(customer.getCustomerId()) != null) {
             System.out.println("Customer with ID " + customer.getCustomerId() + " already exists.");
@@ -174,8 +182,7 @@ public class RentalSystem {
         saveCustomer(customer);
         return true;
     }
-
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+    public boolean rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Available) {
             vehicle.setStatus(Vehicle.VehicleStatus.Rented);
 
@@ -186,12 +193,14 @@ public class RentalSystem {
             rewriteVehiclesFile();
 
             System.out.println("Vehicle rented to " + customer.getCustomerName());
+            return true;
         } else {
             System.out.println("Vehicle is not available for renting.");
+            return false;
         }
     }
-
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+  
+    public boolean returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Rented) {
             vehicle.setStatus(Vehicle.VehicleStatus.Available);
 
@@ -202,11 +211,14 @@ public class RentalSystem {
             rewriteVehiclesFile();
 
             System.out.println("Vehicle returned by " + customer.getCustomerName());
+            return true;
         } else {
             System.out.println("Vehicle is not rented.");
+            return false;
         }
     }
 
+    // Appends a new vehicle entry to vehicles.txt
     public void saveVehicle(Vehicle vehicle) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(VEHICLE_FILE, true))) {
             writer.println(formatVehicleForFile(vehicle));
@@ -215,6 +227,7 @@ public class RentalSystem {
         }
     }
 
+    // Appends a new customer entry to customers.txt
     public void saveCustomer(Customer customer) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(CUSTOMER_FILE, true))) {
             writer.println(customer.getCustomerId() + "," + customer.getCustomerName());
@@ -223,6 +236,7 @@ public class RentalSystem {
         }
     }
 
+    // Appends a new rental record entry to rental_records.txt
     public void saveRecord(RentalRecord record) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(RECORD_FILE, true))) {
             writer.println(
@@ -238,6 +252,7 @@ public class RentalSystem {
         }
     }
 
+    // Overwrites vehicles.txt with the current list so vehicle status changes are preserved
     private void rewriteVehiclesFile() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(VEHICLE_FILE, false))) {
             for (Vehicle vehicle : vehicles) {
@@ -248,6 +263,7 @@ public class RentalSystem {
         }
     }
 
+    // Converts a vehicle object into one formatted line for saving to the file
     private String formatVehicleForFile(Vehicle vehicle) {
         String type;
         String extraDetails = "";
