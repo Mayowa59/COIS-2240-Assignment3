@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class RentalSystem {
     private static RentalSystem instance;
@@ -18,6 +21,7 @@ public class RentalSystem {
 
     // Singleton pattern: only one RentalSystem object can exist
     private RentalSystem() {
+        loadData();
     }
 
     public static RentalSystem getInstance() {
@@ -27,9 +31,137 @@ public class RentalSystem {
         return instance;
     }
 
-    public void addVehicle(Vehicle vehicle) {
+    // Loads all saved data from text files when the program starts
+    private void loadData() {
+        loadVehicles();
+        loadCustomers();
+        loadRentalRecords();
+    }
+
+    // Loads vehicles from vehicles.txt into the vehicles list
+    private void loadVehicles() {
+        File file = new File(VEHICLE_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+
+                String type = parts[0];
+                String plate = parts[1];
+                String make = parts[2];
+                String model = parts[3];
+                int year = Integer.parseInt(parts[4]);
+                Vehicle.VehicleStatus status = Vehicle.VehicleStatus.valueOf(parts[5]);
+
+                Vehicle vehicle = null;
+
+                if (type.equals("Car")) {
+                    int numSeats = Integer.parseInt(parts[6].split("=")[1]);
+                    vehicle = new Car(make, model, year, numSeats);
+                } else if (type.equals("PickupTruck")) {
+                    double cargoSize = Double.parseDouble(parts[6].split("=")[1]);
+                    boolean hasTrailer = Boolean.parseBoolean(parts[7].split("=")[1]);
+                    vehicle = new PickupTruck(make, model, year, cargoSize, hasTrailer);
+                } else if (type.equals("Minibus")) {
+                    boolean accessible = false;
+                    if (parts.length > 6 && parts[6].toLowerCase().contains("true")) {
+                        accessible = true;
+                    }
+                    vehicle = new Minibus(make, model, year, accessible);
+                }
+
+                if (vehicle != null) {
+                    vehicle.setLicensePlate(plate);
+                    vehicle.setStatus(status);
+                    vehicles.add(vehicle);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error loading vehicles: " + e.getMessage());
+        }
+    }
+
+    // Loads customers from customers.txt into the customers list
+    private void loadCustomers() {
+        File file = new File(CUSTOMER_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+                int customerId = Integer.parseInt(parts[0]);
+                String customerName = parts[1];
+
+                Customer customer = new Customer(customerId, customerName);
+                customers.add(customer);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error loading customers: " + e.getMessage());
+        }
+    }
+
+    // Loads rental records from rental_records.txt into rentalHistory
+    private void loadRentalRecords() {
+        File file = new File(RECORD_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+
+                String recordType = parts[0];
+                String plate = parts[1];
+                int customerId = Integer.parseInt(parts[2]);
+                LocalDate recordDate = LocalDate.parse(parts[4]);
+                double amount = Double.parseDouble(parts[5]);
+
+                Vehicle vehicle = findVehicleByPlate(plate);
+                Customer customer = findCustomerById(customerId);
+
+                if (vehicle != null && customer != null) {
+                    RentalRecord record = new RentalRecord(vehicle, customer, recordDate, amount, recordType);
+                    rentalHistory.addRecord(record);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error loading rental records: " + e.getMessage());
+        }
+    }
+
+    public boolean addVehicle(Vehicle vehicle) {
+        if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
+            System.out.println("Vehicle with license plate " + vehicle.getLicensePlate() + " already exists.");
+            return false;
+        }
+
         vehicles.add(vehicle);
         saveVehicle(vehicle);
+        return true;
     }
 
     public void addCustomer(Customer customer) {
@@ -45,7 +177,6 @@ public class RentalSystem {
             rentalHistory.addRecord(record);
             saveRecord(record);
 
-            // rewrite vehicle file so latest status is stored
             rewriteVehiclesFile();
 
             System.out.println("Vehicle rented to " + customer.getCustomerName());
@@ -62,7 +193,6 @@ public class RentalSystem {
             rentalHistory.addRecord(record);
             saveRecord(record);
 
-            // rewrite vehicle file so latest status is stored
             rewriteVehiclesFile();
 
             System.out.println("Vehicle returned by " + customer.getCustomerName());
@@ -71,7 +201,6 @@ public class RentalSystem {
         }
     }
 
-    // Appends one vehicle entry to vehicles.txt
     public void saveVehicle(Vehicle vehicle) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(VEHICLE_FILE, true))) {
             writer.println(formatVehicleForFile(vehicle));
@@ -80,7 +209,6 @@ public class RentalSystem {
         }
     }
 
-    // Appends one customer entry to customers.txt
     public void saveCustomer(Customer customer) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(CUSTOMER_FILE, true))) {
             writer.println(customer.getCustomerId() + "," + customer.getCustomerName());
@@ -89,7 +217,6 @@ public class RentalSystem {
         }
     }
 
-    // Appends one rental record entry to rental_records.txt
     public void saveRecord(RentalRecord record) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(RECORD_FILE, true))) {
             writer.println(
@@ -105,7 +232,6 @@ public class RentalSystem {
         }
     }
 
-    // Overwrites vehicles.txt with current vehicle list so statuses stay current
     private void rewriteVehiclesFile() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(VEHICLE_FILE, false))) {
             for (Vehicle vehicle : vehicles) {
@@ -116,7 +242,6 @@ public class RentalSystem {
         }
     }
 
-    // Converts a vehicle into one line for the file
     private String formatVehicleForFile(Vehicle vehicle) {
         String type;
         String extraDetails = "";
@@ -130,7 +255,7 @@ public class RentalSystem {
             extraDetails = "CargoSize=" + truck.getCargoSize() + ",HasTrailer=" + truck.hasTrailer();
         } else if (vehicle instanceof Minibus) {
             type = "Minibus";
-            extraDetails = vehicle.getInfo(); // includes accessible detail
+            extraDetails = vehicle.getInfo();
         } else {
             type = "Vehicle";
             extraDetails = vehicle.getInfo();
@@ -231,4 +356,4 @@ public class RentalSystem {
         }
         return null;
     }
-}
+}}
