@@ -62,12 +62,16 @@ public class VehicleRentalApp {
 
                     if (vehicle != null) {
                         vehicle.setLicensePlate(plate);
+                        try {
+                            vehicle.setLicensePlate(plate);
 
-                        // Checks the boolean result so duplicate license plates are rejected
-                        if (rentalSystem.addVehicle(vehicle)) {
-                            System.out.println("Vehicle added successfully.");
-                        } else {
-                            System.out.println("Duplicate license plate. Vehicle not added.");
+                            if (rentalSystem.addVehicle(vehicle)) {
+                                System.out.println("Vehicle added successfully.");
+                            } else {
+                                System.out.println("Duplicate license plate. Vehicle not added.");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Error: " + e.getMessage());
                         }
                     } else {
                         System.out.println("Vehicle not added successfully.");

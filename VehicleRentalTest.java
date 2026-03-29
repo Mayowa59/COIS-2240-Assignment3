@@ -1,6 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 public class VehicleRentalTest {
 
@@ -57,5 +59,16 @@ public class VehicleRentalTest {
 
         boolean secondReturn = rentalSystem.returnVehicle(vehicle, customer, LocalDate.now(), 0.0);
         assertFalse(secondReturn);
+    }
+
+    @Test
+    public void testSingletonRentalSystem() throws Exception {
+        Constructor<RentalSystem> constructor = RentalSystem.class.getDeclaredConstructor();
+
+        int modifiers = constructor.getModifiers();
+        assertEquals(Modifier.PRIVATE, modifiers);
+
+        RentalSystem rentalSystem = RentalSystem.getInstance();
+        assertNotNull(rentalSystem);
     }
 }
