@@ -58,12 +58,16 @@ public class VehicleRentalApp {
 		            	vehicle = null;
 		            }
                     
-                    if (vehicle != null){
-	                    vehicle.setLicensePlate(plate);
-	                    rentalSystem.addVehicle(vehicle);
-                    }
-                    else {
-	                    System.out.println("Vehicle not added successfully.");
+                    if (vehicle != null) {
+                        vehicle.setLicensePlate(plate);
+
+                        if (rentalSystem.addVehicle(vehicle)) {
+                            System.out.println("Vehicle added successfully.");
+                        } else {
+                            System.out.println("Duplicate license plate. Vehicle not added.");
+                        }
+                    } else {
+                        System.out.println("Vehicle not added successfully.");
                     }
                     break;
 
@@ -74,8 +78,11 @@ public class VehicleRentalApp {
                     System.out.print("Enter name: ");
                     String cname = scanner.nextLine();
 
-                    rentalSystem.addCustomer(new Customer(cid, cname));
-                    System.out.println("Customer added successfully.");
+                    if (rentalSystem.addCustomer(new Customer(cid, cname))) {
+                        System.out.println("Customer added successfully.");
+                    } else {
+                        System.out.println("Duplicate customer ID. Customer not added.");
+                    }
                     break;
                     
                 case 3:
